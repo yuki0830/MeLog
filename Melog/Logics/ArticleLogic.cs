@@ -58,7 +58,7 @@ namespace Melog.Logics
                                    where a.CreatedAt.Year == index.Year
                                    where a.CreatedAt.Month == index.Month
                                    select a)
-                                   .ToList().ConvertAll(x => Tuple.Create<string, string, long>(x.CreatedAt.ToString("dd日"), x.Title, x.ArticleId));
+                                   .ToList().ConvertAll(x => Tuple.Create<string, string, long>(x.CreatedAt.ToString("dd"), x.Title, x.ArticleId));
                     pastArticleList[$"{index.Year:D4}年{index.Month:D2}月"] = articleList;
                 }
 

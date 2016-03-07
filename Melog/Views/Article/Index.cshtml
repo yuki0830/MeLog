@@ -56,15 +56,15 @@
                     {
                         foreach(var index in Model.PastArticleListView.PastArticleList)
                         {
-                            <p>@index.Key</p>
+                            <p class="past-articles-index">@index.Key</p>
                             <ul>
                                 @{ 
                                     foreach(var article in index.Value)
                                     {
-                                        <li>
-                                            <a href="/Article/Specify?articleId=@article.Item3">
-                                                <p>@article.Item1</p>
-                                                <p>@article.Item2</p>
+                                        <li class="past-articles-list-item">
+                                            <a href="/Article/Specify?articleId=@article.Item3" class="past-articles-link">
+                                                <p class="past-articles-list-item-date">@article.Item1</p>
+                                                <p class="past-articles-list-item-title">@article.Item2</p>
                                             </a>
                                         </li>
                                     }
