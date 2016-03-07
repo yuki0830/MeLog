@@ -1,0 +1,56 @@
+﻿@using MarkdownSharp
+@model Melog.Models.IndexViewModels.ArticleViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - マイ ASP.NET アプリケーション</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script type="text/javascript" src="~/Scripts/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="~/Libs/honoka/js/bootstrap.js"></script>
+    <script type="text/javascript" src="~/Libs/syntaxhighlighter_3.0.83/scripts/shCore.js"></script>
+    <script type="text/javascript" src="~/Libs/syntaxhighlighter_3.0.83/scripts/shBrushCSharp.js"></script>
+    <link type="text/css" rel="stylesheet" href="~/Libs/syntaxhighlighter_3.0.83/styles/shCoreDefault.css" />
+    <script type="text/javascript">SyntaxHighlighter.all();</script>
+    <script src="~/Scripts/marked.js"></script>
+    <script src="~/Libs/highlight/highlight.pack.js"></script>
+    <script src="~/Scripts/editor.js"></script>
+    <link rel="stylesheet" href="~/Content/icono.min.css" />
+</head>
+<body>
+    <div class="header-block">
+        <div class="site-name"><a href="/" class="site-link">Giita</a></div>
+    </div>
+    <div class="content-block">
+        <div class="title-block">
+            <div class="date-format"></div>
+            <div class="title-format">新しい記事</div>
+        </div>
+        <div class="main-block">
+            <div class="left-area">
+                @using (Html.BeginForm("Save", "Article", FormMethod.Post, new { }))
+                {
+                    <div class="editor-wrapper">
+                        @Html.TextBoxFor(m => m.Title, new { @id = "title-box", @placeholder = "タイトルを入力してください" })
+                        @Html.TextAreaFor(m => m.Description, new { @id = "description-box", @class = "form-control" })
+                        <input type="submit" value="保存"/>
+                        @*<div id="result"></div>*@
+                    </div>
+                }
+            </div>
+            <div class="right-area">right</div>
+        </div>
+    </div>
+    <div class="footer-block">
+        <div class="copyright">Copyright © 2016 UK All Rights Reserved.</div>
+    </div>
+</body>
+</html>
