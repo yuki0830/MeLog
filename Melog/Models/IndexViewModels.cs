@@ -13,7 +13,7 @@ namespace Melog.Models
 
         public FavorRankingViewModel FavorRankingView { get; set; }
 
-        public PastArticleListViewModel PastArticleListView { get; set; }
+        public ArchiveListViewModel ArchiveListView { get; set; }
 
         public class ArticleViewModel
         {
@@ -36,9 +36,36 @@ namespace Melog.Models
             public List<Tuple<long, string, DateTimeOffset>> FavorRankingList { get; set; }
         }
 
-        public class PastArticleListViewModel
+        public class ArchiveListViewModel
         {
-            public Dictionary<string, List<Tuple<string, string, long>>> PastArticleList { get; set; }
+            public List<YearlyArchiveModel> YearlyArchiveList { get; set; }
+
+            public class ArchivedArticleModel
+            {
+                public string Title { get; set; }
+                public long ArticleId { get; set; }
+            }
+
+            public class DailyArchiveModel
+            {
+                public string Day { get; set; }
+                public long Count { get; set; }
+                public List<ArchivedArticleModel> ArchivedArticleList { get; set; }
+            }
+
+            public class MonthlyArchiveModel
+            {
+                public string Month { get; set; }
+                public long Count { get; set; }
+                public List<DailyArchiveModel> DailyArchiveList { get; set; }
+            }
+
+            public class YearlyArchiveModel
+            {
+                public string Year { get; set; }
+                public long Count { get; set; }
+                public List<MonthlyArchiveModel> MonthlyArchiveList { get; set; }
+            }
         }
     }
 }

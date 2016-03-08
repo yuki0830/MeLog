@@ -23,7 +23,7 @@ namespace Melog.Controllers
             var article = _logic.GetLatestArticle(userId);
             var categories = _logic.GetCategories(userId, article.ArticleId);
             var user = _logic.GetUserDetail(userId);
-            var pastArticleList = _logic.GetPastArticleList(userId);
+            var archiveList = _logic.GetArchiveList(userId);
 
             var model = new IndexViewModels()
             {
@@ -36,14 +36,10 @@ namespace Melog.Controllers
                     UpdatedAt = article.UpdatedAt
                 },
                 FavorRankingView = new IndexViewModels.FavorRankingViewModel
-                {
-                    
+                {                    
 
                 },
-                PastArticleListView = new IndexViewModels.PastArticleListViewModel
-                {
-                    PastArticleList = pastArticleList
-                }
+                ArchiveListView = archiveList
             };
 
             return View(model);

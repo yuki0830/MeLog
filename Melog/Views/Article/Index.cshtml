@@ -21,6 +21,14 @@
     <script src="~/Scripts/editor.js"></script>
     <link rel="stylesheet" href="~/Content/icono.min.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script>
+        $(function () {
+            $(".year-btn").on("click", function () {
+                $(this).next().next().toggleClass("active");
+                console.log($(this).next().next());
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="header-block">
@@ -52,25 +60,59 @@
             <div class="left-area">@Html.Raw(new Markdown().Transform(Model.ArticleView.Description))</div>
             <div class="right-area">
                 <div class="past-articles">
-                    @if(Model.PastArticleListView != null)
+                    @if (Model.ArchiveListView?.YearlyArchiveList != null)
                     {
-                        foreach(var index in Model.PastArticleListView.PastArticleList)
-                        {
-                            <p class="past-articles-index">@index.Key</p>
-                            <ul>
-                                @{ 
-                                    foreach(var article in index.Value)
+                        <ul class="yearly-list">
+                            @foreach (var yearlyArchive in Model.ArchiveListView.YearlyArchiveList)
+                            {
+                                <li class="">
+                                    <div class="year-btn">
+                                        <div class="icono-caretDownCircle btn-wrapper"></div>
+                                        <div class="year-label">@yearlyArchive.Year (@yearlyArchive.Count)</div>
+                                    </div>
+                                    <div class="jump-btn"></div>
+                                    @if (yearlyArchive.MonthlyArchiveList != null)
                                     {
-                                        <li class="past-articles-list-item">
-                                            <a href="/Article/Specify?articleId=@article.Item3" class="past-articles-link">
-                                                <p class="past-articles-list-item-date">@article.Item1</p>
-                                                <p class="past-articles-list-item-title">@article.Item2</p>
-                                            </a>
-                                        </li>
+                                        <ul class="monthly-list">
+                                            @foreach (var monthlyArchive in yearlyArchive.MonthlyArchiveList)
+                                            {
+                                                <li class="">
+                                                    <div class="month-btn">
+                                                        <div class="icono-caretDownCircle btn-wrapper"></div>
+                                                        <div class="month-label">@monthlyArchive.Month (@monthlyArchive.Count)</div>
+                                                    </div>
+                                                    <div class="jump-btn"></div>
+                                                    @if (yearlyArchive.MonthlyArchiveList != null)
+                                                    {
+                                                        <ul class="daily-list">
+                                                            @foreach (var dailyArchive in monthlyArchive.DailyArchiveList)
+                                                            {
+                                                                <li class="">
+                                                                    <div class="icono-caretDownCircle btn-wrapper"></div>
+                                                                    <div class="day-label">@dailyArchive.Day (@dailyArchive.Count)</div>
+                                                                    <div class="jump-btn"></div>
+                                                                    @if (dailyArchive.ArchivedArticleList != null)
+                                                                    {
+                                                                        <ul class="archive-list">
+                                                                            @foreach (var article in dailyArchive.ArchivedArticleList)
+                                                                            {
+                                                                                <li class="archive-item">
+                                                                                    <div class="archive-label">@article.Title</div>
+                                                                                </li>
+                                                                            }
+                                                                        </ul>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
                                     }
-                                }
-                            </Ul>
-                        }
+                                </li>
+                            }
+                        </ul>
                     }
                 </div>
             </div>
