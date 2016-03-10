@@ -1,6 +1,5 @@
 ﻿@using MarkdownSharp
 @model Melog.Models.IndexViewModels
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,105 +20,130 @@
     <script src="~/Scripts/editor.js"></script>
     <link rel="stylesheet" href="~/Content/icono.min.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Sarpanch:600' rel='stylesheet' type='text/css'>
     <script>
         $(function () {
             $(".year-btn").on("click", function () {
-                $(this).next().next().toggleClass("active");
+                $(this).parent().next().toggleClass("active");
+                console.log($(this).parent().next());
+            });
+            $(".month-btn").on("click", function () {
+                $(this).parent().next().toggleClass("active");
+                console.log($(this).next().next());
+            });
+            $(".day-btn").on("click", function () {
+                $(this).parent().next().toggleClass("active");
                 console.log($(this).next().next());
             });
         });
     </script>
 </head>
 <body>
-    <div class="header-block">
-        <div class="site-name"><a href="/" class="site-link">Giita</a></div>
-        <a href="/Article/Edit" class="new-article-btn">
-            <div class="icono-file btn-wrapper"></div>
-            <p class="new-article-label">新しい記事を書く</p>
-        </a>
-    </div>
-    <div class="content-block">
-        <div class="title-block">
-            <div class="title-format">@Model.ArticleView.Title</div>
-            <div class="date-format">作成日：@Model.ArticleView.CreatedAt.ToString("yyyy/MM/dd")</div>
-            @if (Model.ArticleView.UpdatedAt != null)
-            {
-                <div class="date-format">最終更新日：@Model.ArticleView.UpdatedAt?.ToString("yyyy/MM/dd")</div>
-            }
-            @if (Model.ArticleView.Categories.Count > 0)
-            {
-                <ul class="categories">
-                    @for (var i = 0; i < Model.ArticleView.Categories.Count; i++)
-                    {
-                        <li class="category">@Model.ArticleView.Categories[i]</li>
-                    }
-                </ul>
-            }
+    @using (Html.BeginForm("Edit", "Article", FormMethod.Get, new { id = "article-form" }))
+    {
+        @Html.HiddenFor(m => m.ArticleView.ArticleId)
+        <div class="header-block">
+            <div class="site-name"><a href="/" class="site-link">Loggle</a></div>
+            <a href="/Article/New" class="new-article-btn">
+                <div class="icono-file btn-wrapper"></div>
+                <p class="new-article-label">新しい記事を書く</p>
+            </a>
+            <a href="/Article/Edit" class="new-article-btn" onclick="$('#article-form').submit();">
+                <div class="icono-file btn-wrapper"></div>
+                <p class="new-article-label">編集する</p>
+            </a>
         </div>
-        <div class="main-block">
-            <div class="left-area">@Html.Raw(new Markdown().Transform(Model.ArticleView.Description))</div>
-            <div class="right-area">
-                <div class="past-articles">
-                    @if (Model.ArchiveListView?.YearlyArchiveList != null)
+        <div class="content-block">
+            <div class="title-block">
+                <div class="title-format">@Model.ArticleView.Title</div>
+                <div class="date-format">作成日：@Model.ArticleView.CreatedAt.ToString("yyyy/MM/dd")</div>
+                @if (Model.ArticleView.UpdatedAt != null)
+                {
+                    <div class="date-format">(最終更新日：@(Model.ArticleView.UpdatedAt?.ToString("yyyy/MM/dd")))</div>
+                }
+                @if (Model.ArticleView.Categories.Count > 0)
+                {
+                    <ul class="categories">
+                        @for (var i = 0; i < Model.ArticleView.Categories.Count; i++)
                     {
-                        <ul class="yearly-list">
-                            @foreach (var yearlyArchive in Model.ArchiveListView.YearlyArchiveList)
-                            {
-                                <li class="">
-                                    <div class="year-btn">
-                                        <div class="icono-caretDownCircle btn-wrapper"></div>
-                                        <div class="year-label">@yearlyArchive.Year (@yearlyArchive.Count)</div>
-                                    </div>
-                                    <div class="jump-btn"></div>
-                                    @if (yearlyArchive.MonthlyArchiveList != null)
-                                    {
-                                        <ul class="monthly-list">
-                                            @foreach (var monthlyArchive in yearlyArchive.MonthlyArchiveList)
-                                            {
-                                                <li class="">
-                                                    <div class="month-btn">
-                                                        <div class="icono-caretDownCircle btn-wrapper"></div>
-                                                        <div class="month-label">@monthlyArchive.Month (@monthlyArchive.Count)</div>
-                                                    </div>
-                                                    <div class="jump-btn"></div>
-                                                    @if (yearlyArchive.MonthlyArchiveList != null)
-                                                    {
-                                                        <ul class="daily-list">
-                                                            @foreach (var dailyArchive in monthlyArchive.DailyArchiveList)
-                                                            {
-                                                                <li class="">
-                                                                    <div class="icono-caretDownCircle btn-wrapper"></div>
-                                                                    <div class="day-label">@dailyArchive.Day (@dailyArchive.Count)</div>
-                                                                    <div class="jump-btn"></div>
-                                                                    @if (dailyArchive.ArchivedArticleList != null)
-                                                                    {
-                                                                        <ul class="archive-list">
-                                                                            @foreach (var article in dailyArchive.ArchivedArticleList)
-                                                                            {
-                                                                                <li class="archive-item">
-                                                                                    <div class="archive-label">@article.Title</div>
-                                                                                </li>
-                                                                            }
-                                                                        </ul>
-                                                                    }
-                                                                </li>
-                                                            }
-                                                        </ul>
-                                                    }
-                                                </li>
-                                            }
-                                        </ul>
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    }
+                            <li class="category">@Model.ArticleView.Categories[i]</li>
+                        }
+                    </ul>
+                }
+            </div>
+            <div class="main-block">
+                <div class="left-area">@Html.Raw(new Markdown().Transform(Model.ArticleView.Description))</div>
+                <div class="right-area">
+                    <div class="past-articles">
+                        @if (Model.ArchiveListView?.YearlyArchiveList != null)
+                        {
+                            <ul class="yearly-list">
+                                @foreach (var yearlyArchive in Model.ArchiveListView.YearlyArchiveList)
+                                {
+                                    <li class="list-item">
+                                        <div class="item-btn">
+                                            <div class="year-btn">
+                                                <div class="icono-caretDownCircle btn-wrapper"></div>
+                                                <div class="year-label">@yearlyArchive.Year (@yearlyArchive.Count)</div>
+                                            </div>
+                                            <div class="jump-btn"></div>
+                                        </div>
+                                        @if (yearlyArchive.MonthlyArchiveList != null)
+                                        {
+                                            <ul class="monthly-list">
+                                                @foreach (var monthlyArchive in yearlyArchive.MonthlyArchiveList)
+                                                {
+                                                    <li class="list-item">
+                                                        <div class="item-btn">
+                                                            <div class="month-btn">
+                                                                <div class="icono-caretDownCircle btn-wrapper"></div>
+                                                                <div class="month-label">@monthlyArchive.Month (@monthlyArchive.Count)</div>
+                                                            </div>
+                                                            <div class="jump-btn"></div>
+                                                        </div>
+                                                        @if (yearlyArchive.MonthlyArchiveList != null)
+                                                        {
+                                                            <ul class="daily-list">
+                                                                @foreach (var dailyArchive in monthlyArchive.DailyArchiveList)
+                                                                {
+                                                                    <li class="list-item">
+                                                                        <div class="item-btn">
+                                                                            <div class="day-btn">
+                                                                                <div class="icono-caretDownCircle btn-wrapper"></div>
+                                                                                <div class="day-label">@dailyArchive.Day (@dailyArchive.Count)</div>
+                                                                            </div>
+                                                                            <div class="jump-btn"></div>
+                                                                        </div>
+                                                                        @if (dailyArchive.ArchivedArticleList != null)
+                                                                        {
+                                                                            <ul class="archive-list">
+                                                                                @foreach (var article in dailyArchive.ArchivedArticleList)
+                                                                                {
+                                                                                    <li class="list-item">
+                                                                                        <a href="/Article/Archives?articleId=@article.ArticleId" class="archive-label">@article.Title</a>
+                                                                                    </li>
+                                                                                }
+                                                                            </ul>
+                                                                        }
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        }
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="footer-block">
-        <div class="copyright">Copyright © 2016 UK All Rights Reserved.</div>
-    </div>
+        <div class="footer-block">
+            <div class="copyright">Copyright © 2016 UK All Rights Reserved.</div>
+        </div>
+    }
 </body>
 </html>

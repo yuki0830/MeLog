@@ -33,13 +33,12 @@
     <div class="content-block">
         <div class="title-block">
             <div class="date-format"></div>
-            <div class="title-format">編集</div>
+            <div class="title-format">新しい記事</div>
         </div>
         <div class="main-block">
             <div class="left-area">
                 @using (Html.BeginForm("Save", "Article", FormMethod.Post, new { }))
                 {
-                    @Html.HiddenFor(m => m.ArticleId)
                     <div class="editor-wrapper">
                         @Html.TextBoxFor(m => m.Title, new { @id = "title-box", @placeholder = "タイトルを入力してください" })
                         @Html.TextAreaFor(m => m.Description, new { @id = "description-box", @class = "form-control" })

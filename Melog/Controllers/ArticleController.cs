@@ -29,6 +29,7 @@ namespace Melog.Controllers
             {
                 ArticleView = new IndexViewModels.ArticleViewModel
                 {
+                    ArticleId = article.ArticleId,
                     Title = article.Title,
                     Description = article.Description,
                     Categories = categories,
@@ -36,7 +37,7 @@ namespace Melog.Controllers
                     UpdatedAt = article.UpdatedAt
                 },
                 FavorRankingView = new IndexViewModels.FavorRankingViewModel
-                {                    
+                {
 
                 },
                 ArchiveListView = archiveList
@@ -45,17 +46,61 @@ namespace Melog.Controllers
             return View(model);
         }
 
-        public ActionResult Edit()
+        public ActionResult New()
         {
             return View(new IndexViewModels.ArticleViewModel());
         }
 
-        public ActionResult Specify(long articleId)
+        public ActionResult Edit(IndexViewModels model)
         {
-            System.Diagnostics.Debug.WriteLine(articleId.ToString());
-            return new RedirectResult("/");
+            var userId = 1;
+            var article = _logic.GetArticle(userId, model.ArticleView.ArticleId.Value);
+            var categories = _logic.GetCategories(userId, article.ArticleId);
+
+            var articleViewModel = new IndexViewModels.ArticleViewModel
+            {
+                ArticleId = article.ArticleId,
+                Title = article.Title,
+                Description = article.Description,
+                Categories = categories,
+                CreatedAt = article.CreatedAt,
+                UpdatedAt = article.UpdatedAt
+            };
+            return View(articleViewModel);
         }
 
+        public ActionResult Archives(long articleId)
+        {
+            // TODO セッション管理
+            var userId = 1;
+
+            var article = _logic.GetArticle(userId, articleId);
+            var categories = _logic.GetCategories(userId, article.ArticleId);
+            var user = _logic.GetUserDetail(userId);
+            var archiveList = _logic.GetArchiveList(userId);
+
+            var model = new IndexViewModels()
+            {
+                ArticleView = new IndexViewModels.ArticleViewModel
+                {
+                    ArticleId = article.ArticleId,
+                    Title = article.Title,
+                    Description = article.Description,
+                    Categories = categories,
+                    CreatedAt = article.CreatedAt,
+                    UpdatedAt = article.UpdatedAt
+                },
+                FavorRankingView = new IndexViewModels.FavorRankingViewModel
+                {
+
+                },
+                ArchiveListView = archiveList
+            };
+            
+            return View("Index", model);
+        }
+
+        [ValidateInput(false)]
         public ActionResult Save(IndexViewModels.ArticleViewModel model)
         {
             // TODO セッション管理
@@ -63,20 +108,39 @@ namespace Melog.Controllers
 
             using (var context = new MeLogContext())
             {
-                var latestArticleId = _logic.GetLatestArticle(userId)?.ArticleId;
-                var newArticleId = latestArticleId + 1 ?? null;
-
-                var article = new Articles
+                var article = new Articles();
+                if (model.ArticleId == null)
                 {
-                    ArticleId = newArticleId.Value,
-                    Title = model.Title,
-                    Description = model.Description,
-                    VersionID = 1,
-                    UserId = userId,
-                    CreatedAt = DateTimeOffset.Now
-                };
+                    var latestArticleId = _logic.GetLatestArticle(userId)?.ArticleId;
+                    var newArticleId = latestArticleId + 1 ?? null;
 
-                context.Articles.Add(article);
+                    article.ArticleId = newArticleId.Value;
+                    article.Title = model.Title;
+                    article.Description = model.Description;
+                    article.VersionID = 1;
+                    article.UserId = userId;
+                    article.CreatedAt = DateTimeOffset.Now;
+                    article.UpdatedAt = DateTimeOffset.Now;
+
+                    context.Articles.Add(article);
+                }
+                else
+                {
+                    var existingArticle = (from a in context.Articles
+                                          where a.UserId == userId
+                                          where a.ArticleId == model.ArticleId
+                                          select a).SingleOrDefault();
+
+                    if (existingArticle == null)
+                    {
+                        // TODO 記事ＩＤが不正
+                    }
+
+                    existingArticle.Title = model.Title;
+                    existingArticle.Description = model.Description;
+                    existingArticle.UpdatedAt = DateTimeOffset.Now;
+                }
+
                 context.SaveChanges();
             }
             return new RedirectResult("/");

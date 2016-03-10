@@ -11,14 +11,24 @@ namespace Melog.Logics
 {
     public class ArticleLogic
     {
+        public Articles GetArticle(long userId, long articleId)
+        {
+            using (var context = new MeLogContext())
+            {
+                return (from a in context.Articles
+                        where a.UserId == userId
+                        where a.ArticleId == articleId
+                        select a).FirstOrDefault();
+            }
+        }
+
         public Articles GetLatestArticle(long userId)
         {
             using (var context = new MeLogContext())
             {
                 return (from a in context.Articles
                         where a.UserId == userId
-                        orderby a.CreatedAt descending
-                        select a).FirstOrDefault();
+                        select a).OrderByDescending(x => x.UpdatedAt).ThenByDescending(x => x.CreatedAt).FirstOrDefault();
             }
         }
 
