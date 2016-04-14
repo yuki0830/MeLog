@@ -38,6 +38,80 @@ ShowTag=1
 ShowCommonAttributes=0
 
 [Relation]
+Entity1=Comments
+Entity2=ArticleComments
+RelationType1=2
+RelationType2=3
+Fields1=Comment
+Fields2=CommentId
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,1005,8995,5339,R,R
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20160406114551
+LineMode=0
+Bar1=100
+Bar2=900
+Bar3=534
+TermPos1=R
+TermPos2=R
+
+[Entity]
+PName=Comments
+LName=コメント
+Comment=
+TableOption=
+Page=MAIN
+Left=3450
+Top=250
+Field="コメントID","CommentId","BIGINT","NOT NULL",0,"","",$FFFFFFFF,"identity"
+Field="コメント","Comment","NVARCHAR(256)",,,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20160406114606
+Position="MAIN",3450,250,155,59
+
+[Relation]
+Entity1=Articles
+Entity2=ArticleComments
+RelationType1=2
+RelationType2=3
+Fields1=ArticleId
+Fields2=ArticleId
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,4905,6514,984,R,R
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20160406113942
+LineMode=0
+Bar1=490
+Bar2=651
+Bar3=98
+TermPos1=R
+TermPos2=R
+
+[Entity]
+PName=ArticleComments
+LName=記事コメント一覧
+Comment=
+TableOption=
+Page=MAIN
+Left=3050
+Top=250
+Field="記事ID","ArticleId","BIGINT","NOT NULL",,"","",$FFFFFFFF,""
+Field="コメントID","CommentId","BIGINT","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20160406132420
+Position="MAIN",3050,250,166,62
+
+[Relation]
 Entity1=Users
 Entity2=Articles
 RelationType1=2
@@ -345,7 +419,7 @@ TableOption=
 Page=MAIN
 Left=2600
 Top=100
-Field="記事ID","ArticleId","BIGINT","NOT NULL",,"","",$FFFFFFFF,""
+Field="記事ID","ArticleId","BIGINT","NOT NULL",0,"","",$FFFFFFFF,""
 Field="ユーザーID","UserId","BIGINT","NOT NULL",,"","",$FFFFFFFF,""
 Field="バージョンID","VersionID","BIGINT","NOT NULL",,"","",$FFFFFFFF,""
 Field="タイトル","Title","VARCHAR(256)","NOT NULL",,"","",$FFFFFFFF,""
@@ -355,5 +429,5 @@ Field="更新日時","UpdatedAt","DATETIMEOFFSET",,,"","",$FFFFFFFF,""
 EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20160307095540
+ModifiedDateTime=20160406113814
 Position="MAIN",2600,100,196,193

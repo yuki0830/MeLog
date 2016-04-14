@@ -6,16 +6,16 @@ namespace Melog.Entities
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class ArticleLists
+    public partial class ArticleComments
     {
         [Key]
         [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long UserId { get; set; }
+        public long ArticleId { get; set; }
 
         [Key]
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long ArticleId { get; set; }
+        public long CommentId { get; set; }
     }
 }

@@ -177,11 +177,11 @@
     <Compile Include="Controllers\ArticleController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Entities\ArticleCategories.cs" />
-    <Compile Include="Entities\ArticleIdManagements.cs" />
-    <Compile Include="Entities\ArticleLists.cs" />
+    <Compile Include="Entities\ArticleComments.cs" />
     <Compile Include="Entities\Articles.cs" />
     <Compile Include="Entities\Authorities.cs" />
     <Compile Include="Entities\Categories.cs" />
+    <Compile Include="Entities\Comments.cs" />
     <Compile Include="Entities\ExternalAccounts.cs" />
     <Compile Include="Entities\MeLogContext.cs" />
     <Compile Include="Entities\RoleAuthorities.cs" />
@@ -194,6 +194,7 @@
     <Compile Include="Logics\ArticleLogic.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\SearchViewModel.cs" />
     <Compile Include="Models\IndexViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -424,6 +425,8 @@
     <Content Include="Views\Article\Article.cshtml" />
     <Content Include="Views\Article\New.cshtml" />
     <Content Include="Views\Article\Edit.cshtml" />
+    <Content Include="Views\Article\Search.cshtml" />
+    <Content Include="Views\Shared\_LayoutForArticle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

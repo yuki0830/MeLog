@@ -21,9 +21,11 @@ namespace Melog.Controllers
             var userId = 1;
 
             var article = _logic.GetLatestArticle(userId);
-            var categories = _logic.GetCategories(userId, article.ArticleId);
+            var categories = _logic.GetCategories(article.ArticleId);
             var user = _logic.GetUserDetail(userId);
             var archiveList = _logic.GetArchiveList(userId);
+            var tagList = _logic.GetTagList();
+            var commentList = _logic.GetCommentList(article.ArticleId);
 
             var model = new IndexViewModels()
             {
@@ -40,10 +42,18 @@ namespace Melog.Controllers
                 {
 
                 },
-                ArchiveListView = archiveList
+                ArchiveListView = archiveList,
+                TagListView = new IndexViewModels.TagListViewModel
+                {
+                    TagList = tagList
+                },
+                CommentListView = new IndexViewModels.CommentListViewModel
+                {
+                    CommentList = commentList
+                }
             };
 
-            return View(model);
+            return View("Index", "_LayoutForArticle", model);
         }
 
         public ActionResult New()
@@ -55,7 +65,7 @@ namespace Melog.Controllers
         {
             var userId = 1;
             var article = _logic.GetArticle(userId, model.ArticleView.ArticleId.Value);
-            var categories = _logic.GetCategories(userId, article.ArticleId);
+            var categories = _logic.GetCategories(article.ArticleId);
 
             var articleViewModel = new IndexViewModels.ArticleViewModel
             {
@@ -75,9 +85,11 @@ namespace Melog.Controllers
             var userId = 1;
 
             var article = _logic.GetArticle(userId, articleId);
-            var categories = _logic.GetCategories(userId, article.ArticleId);
+            var categories = _logic.GetCategories(article.ArticleId);
             var user = _logic.GetUserDetail(userId);
             var archiveList = _logic.GetArchiveList(userId);
+            var tagList = _logic.GetTagList();
+            var commentList = _logic.GetCommentList(article.ArticleId);
 
             var model = new IndexViewModels()
             {
@@ -94,10 +106,18 @@ namespace Melog.Controllers
                 {
 
                 },
-                ArchiveListView = archiveList
+                ArchiveListView = archiveList,
+                TagListView = new IndexViewModels.TagListViewModel
+                {
+                    TagList = tagList
+                },
+                CommentListView = new IndexViewModels.CommentListViewModel
+                {
+                    CommentList = commentList
+                }
             };
-            
-            return View("Index", model);
+
+            return View("Index", "_LayoutForArticle", model);
         }
 
         [ValidateInput(false)]
@@ -105,46 +125,85 @@ namespace Melog.Controllers
         {
             // TODO セッション管理
             var userId = 1;
-
+            
             using (var context = new MeLogContext())
             {
                 var article = new Articles();
+                
+                // 新規
                 if (model.ArticleId == null)
                 {
-                    var latestArticleId = _logic.GetLatestArticle(userId)?.ArticleId;
-                    var newArticleId = latestArticleId + 1 ?? null;
-
-                    article.ArticleId = newArticleId.Value;
-                    article.Title = model.Title;
-                    article.Description = model.Description;
-                    article.VersionID = 1;
-                    article.UserId = userId;
-                    article.CreatedAt = DateTimeOffset.Now;
-                    article.UpdatedAt = DateTimeOffset.Now;
-
-                    context.Articles.Add(article);
+                    var articleId = _logic.NewArticle(userId, model);
+                    _logic.RegistArticleCategories(articleId, model.CategoryText);
+                    return new RedirectResult("/");
                 }
+                // 編集
                 else
                 {
-                    var existingArticle = (from a in context.Articles
-                                          where a.UserId == userId
-                                          where a.ArticleId == model.ArticleId
-                                          select a).SingleOrDefault();
-
-                    if (existingArticle == null)
-                    {
-                        // TODO 記事ＩＤが不正
-                    }
-
-                    existingArticle.Title = model.Title;
-                    existingArticle.Description = model.Description;
-                    existingArticle.UpdatedAt = DateTimeOffset.Now;
+                    _logic.EditArticle(userId, model);
+                    _logic.UpdateArticleCategories(model.ArticleId.Value, model.CategoryText);
+                    return new RedirectResult($"/Article/Archives?articleId={model.ArticleId.Value}");
                 }
-
-                context.SaveChanges();
             }
-            return new RedirectResult("/");
         }
+
+        public ActionResult Search(string word)
+        {
+            using (var context = new MeLogContext())
+            {
+                var categories = (from c in context.Categories
+                                  where c.CategoryName.Contains(word)
+                                  select c.CategoryName);
+                var articleCategories = (from ac in context.ArticleCategories
+                                         join tmp in context.Categories on ac.CategoryId equals tmp.CategoryId into tempc
+                                         from c in tempc.DefaultIfEmpty()
+                                         where c.CategoryName.Contains(word)
+                                         select ac.ArticleId).Distinct();
+
+                var results = (from a in context.Articles
+                               where a.Description.Contains(word) || a.Title.Contains(word) || articleCategories.Contains(a.ArticleId)
+                               select a).Distinct().ToList();
+                var result2 = results.ConvertAll(m => new SearchViewModel.SearchResultModel
+                               {
+                                   ArticleId = m.ArticleId,
+                                   Title = m.Title,
+                                   Overview = m.Description.Length > 100 ? m.Description.Substring(0, 100) : m.Description.Substring(0, m.Description.Length),
+                                   Categories = _logic.GetCategories(m.ArticleId),
+                                   CreatedAt = m.CreatedAt,
+                                   UpdatedAt = m.UpdatedAt
+                               });
+                return View("Search", new SearchViewModel
+                {
+                    SearchWord = word,
+                    SearchResults = result2
+                });
+            }
+        }
+
+        public ActionResult PostComment(IndexViewModels model)
+        {
+            
+            using (var context = new MeLogContext())
+            {
+                var comment = new Comments()
+                {
+                    Comment = model.CommentListView.NewComment
+                };
+                var result = context.Comments.Add(comment);
+                context.SaveChanges();
+
+                var articleComment = new ArticleComments()
+                {
+                    ArticleId = model.ArticleView.ArticleId.Value,
+                    CommentId = result.CommentId
+                };
+                context.ArticleComments.Add(articleComment);
+                context.SaveChanges();
+
+                return new RedirectResult($"/Article/Archives?articleId={model.ArticleView.ArticleId}");
+            }
+        }
+
 
         public ActionResult Contact()
         {

@@ -1,149 +1,164 @@
 ﻿@using MarkdownSharp
 @model Melog.Models.IndexViewModels
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - マイ ASP.NET アプリケーション</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    <script type="text/javascript" src="~/Scripts/jquery-1.10.2.js"></script>
-    <script type="text/javascript" src="~/Libs/honoka/js/bootstrap.js"></script>
-    <script type="text/javascript" src="~/Libs/syntaxhighlighter_3.0.83/scripts/shCore.js"></script>
-    <script type="text/javascript" src="~/Libs/syntaxhighlighter_3.0.83/scripts/shBrushCSharp.js"></script>
-    <link type="text/css" rel="stylesheet" href="~/Libs/syntaxhighlighter_3.0.83/styles/shCoreDefault.css" />
-    <script type="text/javascript">SyntaxHighlighter.all();</script>
-    <script src="~/Scripts/marked.js"></script>
-    <script src="~/Libs/highlight/highlight.pack.js"></script>
-    <script src="~/Scripts/editor.js"></script>
-    <link rel="stylesheet" href="~/Content/icono.min.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link href='https://fonts.googleapis.com/css?family=Sarpanch:600' rel='stylesheet' type='text/css'>
-    <script>
-        $(function () {
-            $(".year-btn").on("click", function () {
-                $(this).parent().next().toggleClass("active");
-                console.log($(this).parent().next());
-            });
-            $(".month-btn").on("click", function () {
-                $(this).parent().next().toggleClass("active");
-                console.log($(this).next().next());
-            });
-            $(".day-btn").on("click", function () {
-                $(this).parent().next().toggleClass("active");
-                console.log($(this).next().next());
-            });
-        });
-    </script>
-</head>
-<body>
-    @using (Html.BeginForm("Edit", "Article", FormMethod.Get, new { id = "article-form" }))
-    {
-        @Html.HiddenFor(m => m.ArticleView.ArticleId)
-        <div class="header-block">
-            <div class="site-name"><a href="/" class="site-link">Loggle</a></div>
-            <a href="/Article/New" class="new-article-btn">
-                <div class="icono-file btn-wrapper"></div>
-                <p class="new-article-label">新しい記事を書く</p>
-            </a>
-            <a href="/Article/Edit" class="new-article-btn" onclick="$('#article-form').submit();">
-                <div class="icono-file btn-wrapper"></div>
-                <p class="new-article-label">編集する</p>
-            </a>
+
+@using (Html.BeginForm("Edit", "Article", FormMethod.Post, new { id = "article-form" }))
+{
+    @Html.HiddenFor(m => m.ArticleView.ArticleId)
+    <div class="content-block">
+        <div class="title-block">
+            <div class="title-format">@Model.ArticleView.Title</div>
+            <div class="date-format">作成日：@Model.ArticleView.CreatedAt.ToString("yyyy/MM/dd")</div>
+            @if (Model.ArticleView.UpdatedAt != null)
+            {
+                <div class="date-format">(最終更新日：@(Model.ArticleView.UpdatedAt?.ToString("yyyy/MM/dd")))</div>
+            }
+            @if (Model.ArticleView.Categories.Count > 0)
+            {
+                <div class="margin35"></div>
+                <ul class="categories">
+                    @for (var i = 0; i < Model.ArticleView.Categories.Count; i++)
+                    {
+                        <li class="category">@Model.ArticleView.Categories[i]</li>
+                    }
+                </ul>
+                <div class="margin35"></div>
+            }
         </div>
-        <div class="content-block">
-            <div class="title-block">
-                <div class="title-format">@Model.ArticleView.Title</div>
-                <div class="date-format">作成日：@Model.ArticleView.CreatedAt.ToString("yyyy/MM/dd")</div>
-                @if (Model.ArticleView.UpdatedAt != null)
-                {
-                    <div class="date-format">(最終更新日：@(Model.ArticleView.UpdatedAt?.ToString("yyyy/MM/dd")))</div>
-                }
-                @if (Model.ArticleView.Categories.Count > 0)
+        <div class="main-block">
+            <div class="left-area">
+                @Html.Raw(new Markdown().Transform(Model.ArticleView.Description))
+                <hr />
+                <div class="comment-area">
+                    @if (Model.CommentListView?.CommentList != null)
+                    {
+                        foreach (var comment in Model.CommentListView.CommentList)
+                        {
+                            <div class="comment-item">
+                                @*<p class="comment-user">@comment.Item1</p>*@
+                                <p class="comment-text">@comment.Item2</p>
+                            </div>
+                        }
+                    }
+                    @Html.TextAreaFor(m => m.CommentListView.NewComment, new { @id = "comment-box", @class = "form-control" })
+                    <a href="#" onclick="PostComment(); return false;">投稿</a>
+                </div>
+            </div>
+            <div class="right-area">
+                <div class="past-articles">
+                    @if (Model.ArchiveListView?.YearlyArchiveList != null)
+                    {
+                        <ul class="yearly-list">
+                            @foreach (var yearlyArchive in Model.ArchiveListView.YearlyArchiveList)
+                            {
+                            <li class="list-item">
+                                <div class="item-btn">
+                                    <div class="year-btn">
+                                        <div class="arrow-right"></div>
+                                        <div class="year-label">@yearlyArchive.Year (@yearlyArchive.Count)</div>
+                                    </div>
+                                    <div class="jump-btn"></div>
+                                </div>
+                                @if (yearlyArchive.MonthlyArchiveList != null)
+                                    {
+                                <ul class="monthly-list">
+                                    @foreach (var monthlyArchive in yearlyArchive.MonthlyArchiveList)
+                                            {
+                                        <li class="list-item">
+                                            <div class="item-btn">
+                                                <div class="month-btn">
+                                                    <div class="arrow-right"></div>
+                                                    <div class="month-label">@monthlyArchive.Month (@monthlyArchive.Count)</div>
+                                                </div>
+                                                <div class="jump-btn"></div>
+                                            </div>
+                                            @if (yearlyArchive.MonthlyArchiveList != null)
+                                                    {
+                                                <ul class="daily-list">
+                                                    @foreach (var dailyArchive in monthlyArchive.DailyArchiveList)
+                                                            {
+                                                        <li class="list-item">
+                                                            <div class="item-btn">
+                                                                <div class="day-btn">
+                                                                    <div class="arrow-right"></div>
+                                                                    <div class="day-label">@dailyArchive.Day (@dailyArchive.Count)</div>
+                                                                </div>
+                                                                <div class="jump-btn"></div>
+                                                            </div>
+                                                            @if (dailyArchive.ArchivedArticleList != null)
+                                                                    {
+                                                                <ul class="archive-list">
+                                                                    @foreach (var article in dailyArchive.ArchivedArticleList)
+                                                                            {
+                                                                        <li class="list-item">
+                                                                            <a href="/Article/Archives?articleId=@article.ArticleId" class="archive-label">@article.Title</a>
+                                                                        </li>
+                                                                            }
+                                                                </ul>
+                                                                    }
+                                                        </li>
+                                                            }
+                                                </ul>
+                                                    }
+                                        </li>
+                                            }
+                                </ul>
+                                    }
+                            </li>
+                            }
+                        </ul>
+                    }
+                </div>
+                @if (Model.TagListView?.TagList != null)
                 {
                     <ul class="categories">
-                        @for (var i = 0; i < Model.ArticleView.Categories.Count; i++)
-                    {
-                            <li class="category">@Model.ArticleView.Categories[i]</li>
+                        @for (var i = 0; i < Model.TagListView.TagList.Count; i++)
+                        {
+                            <li class="category"><a href="#">@Model.TagListView.TagList[i]</a></li>
                         }
                     </ul>
                 }
             </div>
-            <div class="main-block">
-                <div class="left-area">@Html.Raw(new Markdown().Transform(Model.ArticleView.Description))</div>
-                <div class="right-area">
-                    <div class="past-articles">
-                        @if (Model.ArchiveListView?.YearlyArchiveList != null)
-                        {
-                            <ul class="yearly-list">
-                                @foreach (var yearlyArchive in Model.ArchiveListView.YearlyArchiveList)
-                                {
-                                    <li class="list-item">
-                                        <div class="item-btn">
-                                            <div class="year-btn">
-                                                <div class="icono-caretDownCircle btn-wrapper"></div>
-                                                <div class="year-label">@yearlyArchive.Year (@yearlyArchive.Count)</div>
-                                            </div>
-                                            <div class="jump-btn"></div>
-                                        </div>
-                                        @if (yearlyArchive.MonthlyArchiveList != null)
-                                        {
-                                            <ul class="monthly-list">
-                                                @foreach (var monthlyArchive in yearlyArchive.MonthlyArchiveList)
-                                                {
-                                                    <li class="list-item">
-                                                        <div class="item-btn">
-                                                            <div class="month-btn">
-                                                                <div class="icono-caretDownCircle btn-wrapper"></div>
-                                                                <div class="month-label">@monthlyArchive.Month (@monthlyArchive.Count)</div>
-                                                            </div>
-                                                            <div class="jump-btn"></div>
-                                                        </div>
-                                                        @if (yearlyArchive.MonthlyArchiveList != null)
-                                                        {
-                                                            <ul class="daily-list">
-                                                                @foreach (var dailyArchive in monthlyArchive.DailyArchiveList)
-                                                                {
-                                                                    <li class="list-item">
-                                                                        <div class="item-btn">
-                                                                            <div class="day-btn">
-                                                                                <div class="icono-caretDownCircle btn-wrapper"></div>
-                                                                                <div class="day-label">@dailyArchive.Day (@dailyArchive.Count)</div>
-                                                                            </div>
-                                                                            <div class="jump-btn"></div>
-                                                                        </div>
-                                                                        @if (dailyArchive.ArchivedArticleList != null)
-                                                                        {
-                                                                            <ul class="archive-list">
-                                                                                @foreach (var article in dailyArchive.ArchivedArticleList)
-                                                                                {
-                                                                                    <li class="list-item">
-                                                                                        <a href="/Article/Archives?articleId=@article.ArticleId" class="archive-label">@article.Title</a>
-                                                                                    </li>
-                                                                                }
-                                                                            </ul>
-                                                                        }
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        }
-                                                    </li>
-                                                }
-                                            </ul>
-                                        }
-                                    </li>
-                                }
-                            </ul>
-                        }
-                    </div>
-                </div>
-            </div>
         </div>
-        <div class="footer-block">
-            <div class="copyright">Copyright © 2016 UK All Rights Reserved.</div>
-        </div>
+    </div>
+}
+
+<script>
+    function PostComment() {
+        document.getElementById('article-form').action = '/Article/PostComment';
+        document.getElementById('article-form').submit();
+        document.getElementById('article-form').action = '/Article/Edit';
     }
-</body>
-</html>
+
+    $(function () {
+        $(".year-btn").on("click", function () {
+            $(this).parent().next().toggleClass("active");
+            if ($(this).children().first().hasClass("arrow-down")) {
+                $(this).children().first().addClass("arrow-right");
+                $(this).children().first().removeClass("arrow-down");
+            } else {
+                $(this).children().first().addClass("arrow-down");
+                $(this).children().first().removeClass("arrow-right");
+            }
+        });
+        $(".month-btn").on("click", function () {
+            $(this).parent().next().toggleClass("active");
+            if ($(this).children().first().hasClass("arrow-down")) {
+                $(this).children().first().addClass("arrow-right");
+                $(this).children().first().removeClass("arrow-down");
+            } else {
+                $(this).children().first().addClass("arrow-down");
+                $(this).children().first().removeClass("arrow-right");
+            }
+        });
+        $(".day-btn").on("click", function () {
+            $(this).parent().next().toggleClass("active");
+            if ($(this).children().first().hasClass("arrow-down")) {
+                $(this).children().first().addClass("arrow-right");
+                $(this).children().first().removeClass("arrow-down");
+            } else {
+                $(this).children().first().addClass("arrow-down");
+                $(this).children().first().removeClass("arrow-right");
+            }
+        });
+    });
+</script>

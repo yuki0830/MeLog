@@ -9,31 +9,21 @@ namespace Melog.Entities
     public partial class Articles
     {
         [Key]
-        [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ArticleId { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserId { get; set; }
 
-        [Required]
-        [Column(Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long VersionID { get; set; }
 
         [Required]
-        [Column(Order = 3)]
         [StringLength(256)]
         public string Title { get; set; }
 
+        [Column(TypeName = "text")]
         [Required]
-        [Column(Order = 4, TypeName = "text")]
         public string Description { get; set; }
 
-        [Required]
-        [Column(Order = 5)]
         public DateTimeOffset CreatedAt { get; set; }
 
         public DateTimeOffset? UpdatedAt { get; set; }

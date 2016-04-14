@@ -1,0 +1,26 @@
+﻿@using MarkdownSharp
+@model Melog.Models.SearchViewModel
+
+<div class="content-block">
+
+    <div class="title-block">
+        <div class="title-format">"@(Model.SearchWord)"の検索結果：@(Model.SearchResults.Count)件</div>
+    </div>
+    <div class="main-block">
+        <div class="left-area">
+            @if (Model.SearchResults.Count > 0)
+            {
+                foreach (var result in Model.SearchResults)
+                {
+                    <div class="result-container">
+                        <a href="/Article/Archives?articleId=@result.ArticleId" class="no-decoration">
+                            <p class="result-createdat">@result.CreatedAt.ToString("yyyy/MM/dd")</p>
+                            <p class="result-title">@result.Title</p>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+        <div class="right-area">right</div>
+    </div>
+</div>

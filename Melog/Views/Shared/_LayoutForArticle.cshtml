@@ -17,7 +17,9 @@
     <script src="~/Libs/highlight/highlight.pack.js"></script>
     <script src="~/Scripts/editor.js"></script>
     <link rel="stylesheet" href="~/Content/icono.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link href='https://fonts.googleapis.com/css?family=Sarpanch:600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
         document.getElementById("search-word").addEventListener("keydown", function (e) {
             if (!e) { var e = window.event; }
@@ -36,6 +38,12 @@
         <form id="search-form" action="/Article/Search">
             @Html.TextBox("word", "", new { @id = "search-word", @class = "search-box", @placeholder = "検索ワードを入力" })
         </form>
+        <a href="/Article/New" class="new-article-btn">
+            <p class="new-article-label"><i class="fa fa-sticky-note-o"></i> 新しい記事を書く</p>
+        </a>
+        <a href="/Article/Edit" class="new-article-btn" onclick="$('#article-form').submit(); return false;">
+            <p class="new-article-label"><i class="fa fa-pencil-square-o"></i> 編集する</p>
+        </a>
     </div>
     @RenderBody()
     <div class="footer-block">

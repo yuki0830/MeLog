@@ -15,6 +15,10 @@ namespace Melog.Models
 
         public ArchiveListViewModel ArchiveListView { get; set; }
 
+        public TagListViewModel TagListView { get; set; }
+
+        public CommentListViewModel CommentListView { get; set; }
+
         public class ArticleViewModel
         {
             public long? ArticleId { get; set; }
@@ -24,6 +28,8 @@ namespace Melog.Models
             public string Description { get; set; }
 
             public List<string> Categories { get; set; }
+
+            public string CategoryText { get; set; }
 
             public DateTimeOffset CreatedAt { get; set; }
 
@@ -68,6 +74,18 @@ namespace Melog.Models
                 public long Count { get; set; }
                 public List<MonthlyArchiveModel> MonthlyArchiveList { get; set; }
             }
+        }
+
+        public class TagListViewModel
+        {
+            public List<string> TagList { get; set; }
+        }
+
+        public class CommentListViewModel
+        {
+            public string NewComment { get; set; }
+
+            public List<Tuple<long, string>> CommentList { get; set; }
         }
     }
 }

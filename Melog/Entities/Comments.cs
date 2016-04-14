@@ -6,12 +6,12 @@ namespace Melog.Entities
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class ArticleIdManagements
+    public partial class Comments
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long UserId { get; set; }
+        public long CommentId { get; set; }
 
-        public long? LatestArticleId { get; set; }
+        [StringLength(256)]
+        public string Comment { get; set; }
     }
 }
